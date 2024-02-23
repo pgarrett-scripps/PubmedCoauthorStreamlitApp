@@ -48,7 +48,6 @@ with st.sidebar:
 
 pubmed = PubMed(tool="Author Affiliation Tool", email="pgarrett@scripps.edu")
 
-
 # Execute the query against the API
 results = pubmed.query(query, max_results=max_results)
 
@@ -90,10 +89,14 @@ def get_latest_affiliations(articles: List[Article]) -> dict:
 
         for author in article.authors:
             # Assuming author's name is unique enough for identification
-            if author.name not in author_latest_aff or pub_date > author_latest_aff[author.name]['latest_pub_date']:
+            if author.name not in author_latest_aff:
+                author_latest_aff[author.name] = {'affiliation': author.affiliation, 'latest_pub_date': pub_date, 'title': article.title}
 
-                if skip_none_affiliations and author.affiliation is None:
+            elif pub_date > author_latest_aff[author.name]['latest_pub_date']:
+
+                if skip_none_affiliations is True and author.affiliation is None:
                     continue
+
                 author_latest_aff[author.name] = {'affiliation': author.affiliation, 'latest_pub_date': pub_date, 'title': article.title}
 
     return author_latest_aff
