@@ -25,8 +25,14 @@ with st.sidebar:
     start_date = c1.date_input("Start date", value=five_years_ago, help="The start date for the search (inclusive).")
     end_date = c2.date_input("End date", value=todays_date, help="The end date for the search (inclusive).")
     author = st.text_input("Author", value="Yates, John 3rd", help="The author to search for.")
-    max_results = st.number_input("Max results", value=5_000, help="The maximum number of results to return.")
-    skip_none_affiliations = st.checkbox("Remove Missing Affiliations", value=True, help="Remove affiliations that are missing.")
+    max_results = st.number_input("Max Articles", value=5_000, help="The maximum number of articles to analyze.")
+    skip_none_affiliations = st.checkbox("Skip Missing Affiliations", value=True,
+        help="This option controls how the tool handles articles with missing author affiliation information. "
+             "If enabled, the tool will not update an author's latest affiliation to 'None' if the affiliation data "
+             "is missing in a newer article. Instead, it retains the most recent available affiliation. "
+             "This ensures that authors without updated affiliation information in some articles are still "
+             "associated with their last known affiliation.")
+
 
     if start_date > end_date:
         st.error("Start date must be before end date.")
