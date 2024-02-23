@@ -16,8 +16,8 @@ five_years_ago = todays_date - datetime.timedelta(days=5*365)
 
 with st.sidebar:
     st.title("PubMed Affiliation Tool :microscope:")
-    st.write("This tool uses the pymed python package to search PubMed for articles by author and date. "
-             "Then it extracts the most recent affiliation for each articles coauthors.")
+    st.markdown("This tool uses the pymed python package to search PubMed for articles by author and date. "
+             "It then analyzes these articles to extract the most recent affiliations of the co-authors.")
 
     st.caption("Built by Patrick Garrett based on code from Andy Jones.")
 
@@ -34,10 +34,11 @@ with st.sidebar:
 
     query = f'(("{start_date.strftime("%Y/%m/%d")}"[Date - Create] : "{end_date.strftime("%Y/%m/%d")}"[Date - Create])) AND ({author}[Author])'
 
-    st.write(f"Query: {query}")
-
     if not st.button("Search", use_container_width=True):
         st.stop()
+
+    st.caption("PubMed API Query:")
+    st.caption(query)
 
 pubmed = PubMed(tool="Author Affiliation Tool", email="pgarrett@scripps.edu")
 
