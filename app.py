@@ -7,18 +7,30 @@ import streamlit as st
 
 from pymed import PubMed
 
+# set page title
+st.set_page_config(page_title="PubMed Affiliation Tool", page_icon=":microscope:")
+
 todays_date = datetime.date.today()
 five_years_ago = todays_date - datetime.timedelta(days=5*365)
 
 
 with st.sidebar:
-    st.title("PubMed Coauthor affiliation Search")
+    st.title("PubMed Affiliation Tool :microscope:")
+    st.write("This tool uses the pymed python package to search PubMed for articles by author and date. "
+             "Then it extracts the most recent affiliation for each articles coauthors.")
+
+    st.caption("Built by Patrick Garrett based on code from Andy Jones.")
 
     c1, c2 = st.columns(2)
-    start_date = c1.date_input("Start date", value=five_years_ago)
-    end_date = c2.date_input("End date", value=todays_date)
-    author = st.text_input("Author", value="Yates, John 3rd").strip()
-    max_results = st.number_input("Max results", value=5_000)
+    start_date = c1.date_input("Start date", value=five_years_ago, help="The start date for the search (inclusive).")
+    end_date = c2.date_input("End date", value=todays_date, help="The end date for the search (inclusive).")
+    author = st.text_input("Author", value="Yates, John 3rd", help="The author to search for.")
+    max_results = st.number_input("Max results", value=5_000, help="The maximum number of results to return.")
+    skip_none_affiliations = st.checkbox("Remove Missing Affiliations", value=True, help="Remove affiliations that are missing.")
+
+    if start_date > end_date:
+        st.error("Start date must be before end date.")
+        st.stop()
 
     query = f'(("{start_date.strftime("%Y/%m/%d")}"[Date - Create] : "{end_date.strftime("%Y/%m/%d")}"[Date - Create])) AND ({author}[Author])'
 
@@ -72,6 +84,9 @@ def get_latest_affiliations(articles: List[Article]) -> dict:
         for author in article.authors:
             # Assuming author's name is unique enough for identification
             if author.name not in author_latest_aff or pub_date > author_latest_aff[author.name]['latest_pub_date']:
+
+                if skip_none_affiliations and author.affiliation is None:
+                    continue
                 author_latest_aff[author.name] = {'affiliation': author.affiliation, 'latest_pub_date': pub_date, 'title': article.title}
 
     return author_latest_aff
@@ -83,7 +98,16 @@ latest_affiliations = get_latest_affiliations(articles)
 df = pd.DataFrame(latest_affiliations).T
 
 
-st.subheader("Latest Affiliations")
-
+st.subheader("Affiliations:")
 
 st.dataframe(df)
+
+document_name = f"{author.replace(' ', '')}_affiliations_{start_date.strftime('%Y_%m_%d')}_{end_date.strftime('%Y_%m_%d')}.csv"
+
+st.download_button(
+    label="Download CSV",
+    data=df.to_csv().encode(),
+    file_name=document_name,
+    mime="text/csv",
+    use_container_width=True
+)
