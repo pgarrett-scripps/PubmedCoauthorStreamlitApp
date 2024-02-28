@@ -108,7 +108,7 @@ latest_affiliations = get_latest_affiliations(articles)
 df = pd.DataFrame(latest_affiliations).T
 
 
-st.markdown("<h1 style='text-align: center; color: black;'>Latest Author Affiliations</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>Latest Author Affiliations</h1>", unsafe_allow_html=True)
 
 st.dataframe(df)
 
