@@ -8,14 +8,14 @@ import streamlit as st
 from pymed import PubMed
 
 # set page title
-st.set_page_config(page_title="PubMed Affiliation Tool", page_icon=":microscope:")
+st.set_page_config(page_title="PubMed Affiliations", page_icon=":microscope:")
 
 todays_date = datetime.date.today()
 five_years_ago = todays_date - datetime.timedelta(days=5*365)
 
 
 with st.sidebar:
-    st.title("PubMed Affiliation Tool :microscope:")
+    st.title("PubMed Affiliations :microscope:")
     st.markdown("This tool uses the pymed python package to search PubMed for articles by author and date. "
              "It then analyzes these articles to extract the most recent affiliations of the co-authors.")
 
@@ -108,7 +108,7 @@ latest_affiliations = get_latest_affiliations(articles)
 df = pd.DataFrame(latest_affiliations).T
 
 
-st.subheader("Affiliations:")
+st.markdown("<h1 style='text-align: center; color: black;'>Latest Author Affiliations</h1>", unsafe_allow_html=True)
 
 st.dataframe(df)
 
