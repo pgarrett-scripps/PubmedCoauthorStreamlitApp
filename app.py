@@ -1,5 +1,5 @@
 import datetime
-from typing import List
+from typing import List, Tuple
 import pandas as pd
 import streamlit as st
 from pymed import PubMed
@@ -25,7 +25,7 @@ with st.sidebar:
     end_date = c2.date_input("End date", value=todays_date, help="The end date for the search (inclusive).")
     query_author = st.text_input("Name (Last, First)", value="Yates, John 3rd", help="The author to search for.")
 
-    max_results = st.number_input("Max Articles", value=5_000, help="The maximum number of articles to analyze.")
+    max_results = st.number_input("Max Articles", value=2_500, help="The maximum number of articles to analyze.", max_value=5000)
 
     skip_none_affiliations = st.checkbox("Skip Missing Affiliations", value=True,
                                          help="This option controls how the tool handles articles with missing author affiliation information. "
@@ -47,19 +47,27 @@ with st.sidebar:
 
     query = f'(("{start_date.strftime("%Y/%m/%d")}"[Date - Create] : "{end_date.strftime("%Y/%m/%d")}"[Date - Create])) AND ({query_author}[Author])'
 
+
+
     if not st.button("Search", use_container_width=True):
         st.stop()
+
 
     st.caption("PubMed API Query:")
     st.caption(query)
 
 
+if query_author == "" or query_author is None or query_author == " " or len(query_author) < 3:
+    st.error("Please enter a valid author name. Author name must be > 3 characters.")
+    st.stop()
+
+
 @st.cache_data
-def query_pubmed(query: str, max_results: int) -> List:
+def query_pubmed(query: str, max_results: int) -> Tuple[List[Author], int]:
     pubmed = PubMed(tool="Author Affiliation Tool", email="pgarrett@scripps.edu")
 
     results = pubmed.query(query, max_results=max_results)
-
+    num_articles = 0
     authors = []
     # Loop over the retrieved articles
     for article in results:
@@ -75,10 +83,14 @@ def query_pubmed(query: str, max_results: int) -> List:
                                affiliation_date=publication_date,
                                publication_title=title) for author in article.authors])
 
-    return authors
+        num_articles += 1
+
+    return authors, num_articles
 
 
-authors = query_pubmed(query, max_results)
+authors, num_articles = query_pubmed(query, max_results)
+
+st.caption(f"Found {num_articles} articles with {len(authors)} authors.")
 
 with st.expander("Raw Data"):
     st.markdown("<h1 style='text-align: center;'>All Affiliations</h1>", unsafe_allow_html=True)
