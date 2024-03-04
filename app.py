@@ -16,7 +16,7 @@ five_years_ago = current_date - datetime.timedelta(days=5 * 365)
 with st.sidebar:
     st.title("PubMed Affiliations :microscope:")
     st.markdown("This tool uses the pymed python package to search PubMed for articles by author and date. "
-                "It then analyzes these articles to extract the most recent affiliations each coauthors.")
+                "It then analyzes these articles to extract the most recent affiliation for each coauthor.")
 
     st.caption("Built by Patrick Garrett based on code from Andy Jones.")
     st.caption("Source code available at https://github.com/pgarrett-scripps/PubmedCoauthorStreamlitApp")
