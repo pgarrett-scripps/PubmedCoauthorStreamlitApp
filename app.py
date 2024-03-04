@@ -19,8 +19,8 @@ with st.sidebar:
                 "It then analyzes these articles to extract the most recent affiliation for each coauthor.")
 
     st.caption("Built by Patrick Garrett based on code from Andy Jones.")
-    st.caption("Source code available at https://github.com/pgarrett-scripps/PubmedCoauthorStreamlitApp")
-    st.caption("Contact: pgarrett@scripps.edu")
+    st.caption(
+        "Contact [pgarrett@scripps.edu](mailto:pgarrett@scripps.edu) | Github: [PubmedAffiliations](https://github.com/pgarrett-scripps/PubmedCoauthorStreamlitApp)")
 
     c1, c2 = st.columns(2)
     start_date = c1.date_input("Start date", value=five_years_ago, help="The start date for the search (inclusive).",
