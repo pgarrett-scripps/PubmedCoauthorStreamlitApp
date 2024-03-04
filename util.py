@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import re
 from dataclasses import dataclass, asdict
+from datetime import datetime, date
 from itertools import groupby
 from typing import List, Union, Tuple
 
@@ -124,6 +127,9 @@ def clean_affiliations(affiliation: str) -> Union[None, str]:
     if affiliation is None:
         return None
 
+    if not isinstance(affiliation, str):
+        raise ValueError(f"Affiliation must be a string, not {type(affiliation)}. Affiliation: {affiliation}")
+
     # replace newlines with '; '
     affiliation = affiliation.replace('\n', '; ')
 
@@ -207,20 +213,27 @@ def split_camel_case(affiliation: str) -> Union[None, str]:
     return affiliation
 
 
-@dataclass
+@dataclass(frozen=True)
 class Author:
-    last_name: str
-    first_name: str
-    initials: str
-    affiliation: str
-    affiliation_date: str
-    publication_title: str
+    last_name: str | None
+    first_name: str | None
+    initials: str | None
+    affiliation: str | None
+    affiliation_date: date
+    publication_title: str | None
 
     @property
     def name(self):
-        first_name = self.first_name if self.first_name else ""
-        last_name = self.last_name if self.last_name else ""
-        return f"{last_name}, {first_name}"
+        if self.last_name is None and self.first_name is None:
+            return None
+
+        if self.last_name is None:
+            return self.first_name
+
+        if self.first_name is None:
+            return self.last_name
+
+        return f"{self.last_name}, {self.first_name}"
 
     def to_dict(self):
         # Convert the dataclass fields to a dictionary
