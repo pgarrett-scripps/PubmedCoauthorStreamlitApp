@@ -72,23 +72,32 @@ with st.sidebar:
                                              help="Remove initials contained in parentheses from the affiliations. "
                                                   "Example: (XX Y,X)")
 
-    if not st.button("Search", use_container_width=True):
+    search_btn = st.button("Search", use_container_width=True)
+
+    #blank space for mobile
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    if not search_btn:
         st.stop()
 
-    if author_option == "First":
-        author_tag = '1au'
-    elif author_option == "Last":
-        author_tag = 'lastau'
-    elif author_option == "Any":
-        author_tag = 'au'
-    else:
-        st.error("Invalid author option.")
-        st.stop()
 
-    st.caption("PubMed API Query:")
-    query = f'(("{start_date.strftime("%Y/%m/%d")}"[Date - Create] : "{end_date.strftime("%Y/%m/%d")}' \
-            f'"[Date - Create])) AND ({query_author}[{author_tag}])'
-    st.caption(query)
+if author_option == "First":
+    author_tag = '1au'
+elif author_option == "Last":
+    author_tag = 'lastau'
+elif author_option == "Any":
+    author_tag = 'au'
+else:
+    st.error("Invalid author option.")
+    st.stop()
+
+query = f'(("{start_date.strftime("%Y/%m/%d")}"[Date - Create] : "{end_date.strftime("%Y/%m/%d")}' \
+        f'"[Date - Create])) AND ({query_author}[{author_tag}])'
 
 
 @st.cache_data
@@ -187,6 +196,7 @@ with st.expander("Raw Data"):
 
 # remove authors with invalid names
 authors = [author for author in authors if author.first_name is not None or author.last_name is not None]
+st.caption(f"API Query: {query}")
 st.caption(f"Found {num_articles} articles with {len(authors)} coauthors.")
 st.caption(f"Removed {starting_authors - len(authors)} coauthors with no name.")
 
